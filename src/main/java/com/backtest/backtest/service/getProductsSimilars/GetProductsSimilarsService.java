@@ -3,10 +3,9 @@ package com.backtest.backtest.service.getProductsSimilars;
 import com.backtest.backtest.client.ProductApiClient;
 import com.backtest.backtest.commons.messages.Message;
 import com.backtest.backtest.dto.ProductDetailsResponse;
-import com.backtest.backtest.service.getProductsSimilars.pojos.DatosGetProductsSimilars;
-import com.backtest.backtest.service.getProductsSimilars.pojos.PeticionGetProductsSimilars;
-import com.backtest.backtest.service.getProductsSimilars.pojos.RespuestaGetProductsSimilars;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -17,23 +16,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GetProductsSimilarsService {
     private final ProductApiClient productApiClient;
+    private static final Logger log =
+            LoggerFactory.getLogger(GetProductsSimilarsService.class);
 
-    public RespuestaGetProductsSimilars getProductsSimilars(PeticionGetProductsSimilars peticion){
-        RespuestaGetProductsSimilars respuesta = new RespuestaGetProductsSimilars();
-
-        DatosGetProductsSimilars datos = peticion.getDatos();
+    public Mono<List<ProductDetailsResponse>> getProductsSimilars(String productId){
         //Obtener los ids de los productos similares por id del producto
-        Flux<String> similarsIds = productApiClient.getSimilarIds(datos.getProductId());
+        Flux<String> similarsIds = productApiClient.getSimilarIds(productId);
         //Obtener los detalles de los productos similares por su id
         //flatMap para async concurrente
-        Flux<ProductDetailsResponse> productsSimilarsDetails = similarsIds.flatMap(productApiClient::getProduct)
-                        .onErrorContinue((error, object) -> {
-                           System.out.println(Message.ERROR_OBTENER_PRODUCTO + ": " + error.getMessage() + " - Product ID: " + object);
-                        });
+        Flux<ProductDetailsResponse> productsSimilarsDetails = similarsIds
+                .flatMap(id ->
+                        productApiClient.getProduct(id)
+                                .onErrorContinue((error, object) -> {
+                                    log.error("{} con ID {}: {}", Message.ERROR_OBTENER_PRODUCTO, id, error.getMessage());
+                                })
+                );
 
-        Mono<List<ProductDetailsResponse>> productsSimilarsDetailsList = productsSimilarsDetails.collectList();
-
-        respuesta.setProductsSimilarsDetails(productsSimilarsDetailsList);
-        return respuesta;
+        return productsSimilarsDetails.collectList();
     }
 }
