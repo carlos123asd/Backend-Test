@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: backtest
+  # Control del tamaño maximo de los buffers de datos que Spring WebFlux puede manejar en memoria
+  # Importante por seguridad (ataques DoS), estabilidad (evita que la App se quede sin RAM) y
+  # rendimiento (fuerza a manejar los datos con streaming (dato por dato) en lugar de cargar todo en memoria)
+  codec:
+    max-in-memory-size: 10MB
+  server:  # puerto requerido para la aplicación
+    port: 5000
+
+# Configuración personalizada para la API externa
+external-api:
+  base-url: http://localhost:3001
