@@ -1,23 +1,53 @@
-# Getting Started
+# Backend Similar Products API
 
-### Reference Documentation
-For further reference, please consider the following sections:
+Spring Boot reactive application that exposes a REST API to retrieve detailed information about similar products.
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/3.5.14/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/3.5.14/maven-plugin/build-image.html)
-* [Spring Reactive Web](https://docs.spring.io/spring-boot/3.5.14/reference/web/reactive.html)
-* [Spring Boot DevTools](https://docs.spring.io/spring-boot/3.5.14/reference/using/devtools.html)
+The application consumes two external APIs:
 
-### Guides
-The following guides illustrate how to use some features concretely:
+- Similar product IDs API
+- Product detail API
 
-* [Building a Reactive RESTful Web Service](https://spring.io/guides/gs/reactive-rest-service/)
+and aggregates the results into a single response optimized for concurrency and resilience.
 
-### Maven Parent overrides
+---
 
-Due to Maven's design, elements are inherited from the parent POM to the project POM.
-While most of the inheritance is fine, it also inherits unwanted elements like `<license>` and `<developers>` from the parent.
-To prevent this, the project POM contains empty overrides for these elements.
-If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
+# Technologies
 
+- Java 21
+- Spring Boot 3
+- Spring WebFlux
+- WebClient
+- Reactor (Mono / Flux)
+- Maven
+- Docker
+- k6
+- Grafana
+- InfluxDB
+
+---
+
+# Architecture
+
+The application follows a layered architecture:
+
+```text
+├── client
+│   └── External API communication layer
+│
+├── commons.messages
+│   └── Centralized application messages/constants
+│
+├── config
+│   └── Application and WebClient configuration
+│
+├── controller
+│   └── REST API endpoints
+│
+├── dto
+│   └── Response DTO models
+│
+├── service.getProductsSimilars
+│   └── Business logic and orchestration
+│
+└── BacktestApplication
+    └── Spring Boot main application
