@@ -32,7 +32,7 @@ public class GetProductsSimilarsService {
                 .flatMap(id ->
                         productApiClient.getProduct(id)
                                 .onErrorResume(error -> {
-                                    log.error("{} con ID {}: {}", Message.ERROR_OBTENER_PRODUCTO, id, error.getMessage());
+                                    log.warn("{} con ID {}: {}", Message.ERROR_OBTENER_PRODUCTO, id, error.getMessage());
                                     return Mono.empty();
                                 })
                 );
