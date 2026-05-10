@@ -15,11 +15,11 @@ public class ProductApiClient {
     private final WebClient webClient;
 
     //["1","2","3"]
-    public Flux<String> getSimilarIds(String productId) {
+    public Flux<Integer> getSimilarIds(String productId) {
         return webClient.get()
                 .uri("/product/{id}/similarids", productId)
                 .retrieve()
-                .bodyToFlux(String.class);
+                .bodyToFlux(Integer.class);
     }
 
     //Objeto ProductDetailsResponse
@@ -28,7 +28,7 @@ public class ProductApiClient {
     *  se ha uno con un delay de casi 1 min (50 seg.), por lo que que genera una latencia alta llegado a este punto
     * por eso se ha establecido un timeout de 2 segundos para evitar esperas prolongadas y mejorar la experiencia del usuario.
     * */
-    public Mono<ProductDetailsResponse> getProduct(String productId) {
+    public Mono<ProductDetailsResponse> getProduct(Integer productId) {
         return webClient.get()
                 .uri("/product/{id}", productId)
                 .retrieve()
