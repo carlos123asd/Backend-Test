@@ -21,7 +21,11 @@ public class GetProductsSimilarsService {
 
     public Mono<List<ProductDetailsResponse>> getProductsSimilars(String productId){
         //Obtener los ids de los productos similares por id del producto
-        Flux<String> similarsIds = productApiClient.getSimilarIds(productId);
+        Flux<String> similarsIds = productApiClient.getSimilarIds(productId)
+                .onErrorResume(error -> {;
+                    log.error("{} con ID {}: {}", Message.PRODUCTOS_SIMILARES_NO_OBTENIDOS, productId, error.getMessage());
+                    return Flux.empty();
+                });
         //Obtener los detalles de los productos similares por su id
         //flatMap para async concurrente
         Flux<ProductDetailsResponse> productsSimilarsDetails = similarsIds
